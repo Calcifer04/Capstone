@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<!-- Detail template utilizes static style.css and bootstrap -->
+<head>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting</title>
+</head>
+
+<body>
+    <h3> Voting as {{ request.user }} </h3>
+    <!-- If user is logged in -->
+    {% if request.user.is_authenticated %}
+        <div>
+            <!-- Display question text -->
+            <h1> {{question.question_text}}</h1>
+                {% if error_message %}
+            <p><strong>{{error_message}}</strong></p>
+                {% endif %}
+                
+            <!-- Display poll voting form -->
+            <form action="{% url 'polls:vote' question.id %}" method="post">
+                    {% csrf_token %}
+                    {% for choice in question.choice_set.all %}
+            <input type="radio" name="choice" id="choice {{
+            forloop.counter
+            }}" value="{{ choice.id }}" />
+            <label for="choice {{ forloop.counter }}">
+                <!-- Display choice text -->
+                    {{ choice.choice_text }}
+            </label>
+            <br />
+                    {% endfor %}
+            <input type="submit" value="Vote" />
+            </form>            
+        </div>
+        {% else %}
+            <!-- If user is not logged in -->
+            <h4>You need to be logged in to vote.</h4>
+        {% endif %}
+</body>
+</html>
